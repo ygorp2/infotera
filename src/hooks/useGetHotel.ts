@@ -1,15 +1,15 @@
 import { api } from "@/utilsapi";
 
-export default function useGetSuggestions({
-  searchTerm,
+export default function useGetHotel({
+  hotelId,
   enabled = true,
 }: {
-  searchTerm: string;
+  hotelId: number;
   enabled?: boolean;
 }) {
-  return api.server.getSuggestions.useQuery(
+  return api.server.getHotel.useQuery(
     {
-      searchTerm,
+      hotelId,
     },
     {
       staleTime: Infinity,

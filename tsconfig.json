@@ -21,6 +21,7 @@
       "~/*": ["./src/*"],
       "@/lib*": ["./src/lib/utils/cn.ts"],
       "@/components*": ["./src/components/*"],
+      "@/server*": ["./src/server/*"],
       "@/utils*": ["./src/utils/*"]
     },
     "plugins": [{ "name": "next" }]

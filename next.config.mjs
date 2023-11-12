@@ -17,6 +17,7 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: { domains: ["images.trvl-media.com"] },
 };
 
 export default config;
