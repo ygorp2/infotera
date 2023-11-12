@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { api } from "~/utils/api";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,12 +26,16 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useDebounce } from "usehooks-ts";
 import Footer from "~/components/app/footer";
 import Nav from "~/components/app/nav";
 import Title from "~/components/app/title";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
+import useGetSuggestions from "~/hooks/useGetSuggestion";
 
 export const FormSchema = z.object({
   destiny: z.string({
@@ -57,9 +60,15 @@ export const FormSchema = z.object({
 });
 
 export default function Home() {
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+  });
+  const [destiny, setDestiny] = useState("");
+  const debouncedDestiny = useDebounce(destiny, 500);
+
+  const [childs, setChilds] = useState(0);
+  const { data: suggestions } = useGetSuggestions({
+    searchTerm: debouncedDestiny,
   });
 
   const { register } = form;
@@ -80,7 +89,7 @@ export default function Home() {
       <div className="mt-44">
         <Title />
       </div>
-      <div className="mx-28 mt-24 flex justify-center rounded-lg bg-white px-4 pb-2 pt-4">
+      <div className="mx-28 mt-24 flex justify-center rounded-xl bg-white px-4 pb-2 pt-4">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -101,12 +110,66 @@ export default function Home() {
                       <FormLabel className="text-base">Destino</FormLabel>
                     </div>
                     <FormControl className="mt-1">
-                      <Input
-                        className="mx-2 w-screen max-w-xl border-none text-base font-semibold text-secondary"
-                        type="search"
-                        {...field}
-                        placeholder="Cidade de destino"
-                      />
+                      <Popover
+                        onOpenChange={() => {
+                          return;
+                        }}
+                      >
+                        <PopoverTrigger asChild>
+                          <Input
+                            className="mx-2 w-screen max-w-xl border-none text-base font-semibold text-secondary"
+                            type="search"
+                            onInput={(e) => {
+                              setDestiny(e.currentTarget.value);
+                            }}
+                            {...field}
+                            placeholder="Cidade de destino"
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent className="h-fit w-fit" align="start">
+                          <ScrollArea className="h-80 max-w-[30em]">
+                            {destiny.length < 3 ? (
+                              <div>Digite no mínimo 3 caracteres</div>
+                            ) : suggestions?.length === 0 ? (
+                              <div>Nenhum resultado encontrado</div>
+                            ) : (
+                              suggestions && (
+                                <div>
+                                  {suggestions.map((suggestion) => {
+                                    return (
+                                      <div
+                                        key={suggestion.id}
+                                        className="mb-4"
+                                        onClick={() =>
+                                          form.setValue(
+                                            "destiny",
+                                            suggestion.name,
+                                          )
+                                        }
+                                      >
+                                        <div className="mb-4 flex items-center">
+                                          <MapPinIcon
+                                            size={20}
+                                            className="mx-2 h-6 w-6 opacity-50"
+                                            color="hsl(210, 80%, 51%)"
+                                          />
+                                          <div className="flex flex-col">
+                                            <span className="text-lg">
+                                              {suggestion.name}
+                                            </span>
+                                            <span>{suggestion.region}</span>
+                                          </div>
+                                        </div>
+                                        <Separator className="w-[30em]" />
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )
+                            )}
+                          </ScrollArea>
+                        </PopoverContent>
+                      </Popover>
                     </FormControl>
                     <FormMessage />
                   </div>
@@ -176,9 +239,7 @@ export default function Home() {
                         className="mx-2 h-6 w-6 opacity-50"
                         color="hsl(210, 80%, 51%)"
                       />
-                      <FormLabel className="text-base font-semibold text-secondary">
-                        Saída
-                      </FormLabel>
+                      <FormLabel className="text-base">Saída</FormLabel>
                     </div>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -230,9 +291,7 @@ export default function Home() {
                         className="mx-2 h-6 w-6 opacity-50"
                         color="hsl(210, 80%, 51%)"
                       />
-                      <FormLabel className="text-base font-semibold text-secondary">
-                        Hóspedes
-                      </FormLabel>
+                      <FormLabel className="text-base">Hóspedes</FormLabel>
                     </div>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -240,14 +299,14 @@ export default function Home() {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[240px] justify-start border-none pl-3 text-left font-semibold",
+                              "w-[240px] justify-start border-none pl-3 text-left font-bold",
                               !field.value && "text-base",
                             )}
                           >
-                            {field.value || form.getValues("childs") ? (
+                            {field.value >= 0 || form.getValues("childs") ? (
                               <span className="">
-                                {form.getValues("adults") || "1"} Adulto(s),{" "}
-                                {form.getValues("childs") || "0"} Crianças
+                                {form.getValues("adults")} Adulto(s),{" "}
+                                {form.getValues("childs") ?? "0"} Criança(s)
                               </span>
                             ) : (
                               <span className="font-bold text-secondary">
@@ -257,10 +316,15 @@ export default function Home() {
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                      <PopoverContent
+                        className="w-auto rounded-xl p-2"
+                        align="start"
+                      >
                         <Label htmlFor="adults">Adultos</Label>
                         <div className="flex">
                           <Button
+                            variant={"plusMinus"}
+                            size={"sm"}
                             onClick={() =>
                               form.setValue(
                                 "adults",
@@ -273,9 +337,11 @@ export default function Home() {
                           <Input
                             type="number"
                             {...register("adults")}
-                            className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            className="mx-2 border-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           />
                           <Button
+                            variant={"plusMinus"}
+                            size={"sm"}
                             onClick={() =>
                               form.setValue(
                                 "adults",
@@ -286,32 +352,55 @@ export default function Home() {
                             +
                           </Button>
                         </div>
+                        <Separator className="mx-2 mt-2" />
                         <Label htmlFor="childs">Crianças</Label>
                         <div className="flex">
                           <Button
-                            onClick={() =>
+                            variant={"plusMinus"}
+                            size={"sm"}
+                            onClick={() => {
                               form.setValue(
                                 "childs",
                                 Number(form.getValues("childs") - 1),
-                              )
-                            }
+                              );
+                              setChilds((oldValue) => {
+                                return oldValue - 1;
+                              });
+                            }}
                           >
                             -
                           </Button>
                           <Input
                             type="number"
+                            onInput={(e) => {
+                              setChilds(Number(e.currentTarget.value));
+                            }}
                             {...register("childs")}
-                            className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                            className="mx-2 border-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           />
                           <Button
-                            onClick={() =>
+                            variant={"plusMinus"}
+                            size={"sm"}
+                            onClick={() => {
                               form.setValue(
                                 "childs",
                                 Number(form.getValues("childs") + 1),
-                              )
-                            }
+                              );
+                              setChilds((oldValue) => {
+                                return oldValue + 1;
+                              });
+                            }}
                           >
                             +
+                          </Button>
+                        </div>
+                        <Separator className="mx-2 mt-2" />
+                        <div className="mt-6 flex justify-end">
+                          <Button
+                            variant={"outline"}
+                            className="rounded-xl border-blue-400 p-2 text-blue-400 hover:text-blue-500"
+                          >
+                            Aplicar
                           </Button>
                         </div>
                       </PopoverContent>
@@ -333,9 +422,6 @@ export default function Home() {
           </form>
         </Form>
       </div>
-      {/* <p className="text-2xl">
-        {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-      </p> */}
       <Footer />
     </div>
   );
