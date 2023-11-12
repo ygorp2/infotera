@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 const Nav: FC = () => {
   return (
     <nav>
-      <div className="mx-16 mt-2 flex justify-between">
+      <div className="mx-20 mt-2 flex justify-between">
         <Button variant={"link"} asChild>
           <Link href={"#"}>
             <span className="text-2xl text-[#03284D]">Infotravel</span>

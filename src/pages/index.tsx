@@ -89,7 +89,7 @@ export default function Home() {
       <div className="mt-44">
         <Title />
       </div>
-      <div className="mx-28 mt-24 flex justify-center rounded-xl bg-white px-4 pb-2 pt-4">
+      <div className="mx-28 mt-16 flex justify-center rounded-xl bg-white px-4 pb-2 pt-4">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
