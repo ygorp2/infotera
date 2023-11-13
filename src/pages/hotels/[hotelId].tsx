@@ -1,5 +1,6 @@
 import {
   CheckCircle as CheckCircleIcon,
+  CheckIcon,
   MapPin as MapPinIcon,
   StarIcon,
   XCircle as XCircleIcon,
@@ -16,6 +17,7 @@ import Footer from "~/components/app/footer";
 import AppForm from "~/components/app/form";
 import Nav from "~/components/app/nav";
 import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import useGetHotel from "~/hooks/useGetHotel";
 import { ssrHelper } from "~/utils/ssrHelper";
 
@@ -111,9 +113,28 @@ const HotelPage: NextPage<Props> = (
                         <p className="text-gray-400">Pagamento no hotel</p>
                       </div>
                       <div>
-                        <Button variant={"submit"} className="!p-6">
-                          Reservar agora
-                        </Button>
+                        <Dialog>
+                          <DialogTrigger>
+                            <Button variant={"submit"} className="!p-6">
+                              Reservar agora
+                            </Button>
+                            <DialogContent className="flex h-screen max-w-[99%] flex-col items-center justify-center bg-[#1E435A] text-white opacity-90">
+                              <p>
+                                <CheckIcon
+                                  className="rounded-full bg-[#51B853] p-4"
+                                  size={80}
+                                  strokeWidth="2px"
+                                />
+                              </p>
+                              <span className="mt-4 text-5xl font-medium">
+                                Obrigado!
+                              </span>
+                              <p className="text-2xl">
+                                Reserva Realizada com sucesso.
+                              </p>
+                            </DialogContent>
+                          </DialogTrigger>
+                        </Dialog>
                       </div>
                     </div>
                   </div>
