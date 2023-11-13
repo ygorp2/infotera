@@ -35,6 +35,12 @@ import { Label } from "~/components/ui/label";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
 import useGetSuggestions from "~/hooks/useGetSuggestion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Toaster } from "../ui/toaster";
 
 export const FormSchema = z.object({
@@ -106,12 +112,8 @@ const AppForm: FC = () => {
                       <FormLabel className="text-base">Destino</FormLabel>
                     </div>
                     <FormControl className="mt-1">
-                      <Popover
-                        onOpenChange={() => {
-                          return;
-                        }}
-                      >
-                        <PopoverTrigger asChild>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                           <Input
                             className="mx-2 w-screen max-w-xl border-none text-base font-semibold text-secondary"
                             type="search"
@@ -121,8 +123,12 @@ const AppForm: FC = () => {
                             {...field}
                             placeholder="Cidade de destino"
                           />
-                        </PopoverTrigger>
-                        <PopoverContent className="h-fit w-fit" align="start">
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          loop={true}
+                          className="h-fit w-fit"
+                          align="start"
+                        >
                           <ScrollArea className="h-80 max-w-[30em]">
                             {destiny.length < 3 ? (
                               <div>Digite no mínimo 3 caracteres</div>
@@ -133,38 +139,41 @@ const AppForm: FC = () => {
                                 <div>
                                   {suggestions.map((suggestion) => {
                                     return (
-                                      <div
-                                        key={suggestion.id}
-                                        className="pb-4 hover:bg-background"
-                                        onClick={() =>
-                                          form.setValue(
-                                            "destiny",
-                                            suggestion.name,
-                                          )
-                                        }
-                                      >
-                                        <div className="flex items-center pt-4">
-                                          <MapPinIcon
-                                            size={20}
-                                            className="mx-2 h-6 w-6 opacity-50"
-                                            color="hsl(210, 80%, 51%)"
-                                          />
-                                          <div className="flex flex-col">
-                                            <Highlighter
-                                              className="text-lg"
-                                              searchWords={[field.value]}
-                                              textToHighlight={suggestion.name}
-                                              highlightClassName="bg-[#B8B7EC]"
+                                      <div key={suggestion.id}>
+                                        <DropdownMenuItem
+                                          className="pb-4 hover:bg-background"
+                                          onClick={() =>
+                                            form.setValue(
+                                              "destiny",
+                                              suggestion.name,
+                                            )
+                                          }
+                                        >
+                                          <div className="flex items-center pt-4">
+                                            <MapPinIcon
+                                              size={20}
+                                              className="mx-2 h-6 w-6 opacity-50"
+                                              color="hsl(210, 80%, 51%)"
                                             />
-                                            <Highlighter
-                                              searchWords={[field.value]}
-                                              highlightClassName="bg-[#B8B7EC]"
-                                              textToHighlight={
-                                                suggestion.region
-                                              }
-                                            />
+                                            <div className="flex flex-col">
+                                              <Highlighter
+                                                className="text-lg"
+                                                searchWords={[field.value]}
+                                                textToHighlight={
+                                                  suggestion.name
+                                                }
+                                                highlightClassName="bg-[#B8B7EC]"
+                                              />
+                                              <Highlighter
+                                                searchWords={[field.value]}
+                                                highlightClassName="bg-[#B8B7EC]"
+                                                textToHighlight={
+                                                  suggestion.region
+                                                }
+                                              />
+                                            </div>
                                           </div>
-                                        </div>
+                                        </DropdownMenuItem>
                                         <Separator className="w-[30em]" />
                                       </div>
                                     );
@@ -173,8 +182,8 @@ const AppForm: FC = () => {
                               )
                             )}
                           </ScrollArea>
-                        </PopoverContent>
-                      </Popover>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </FormControl>
                     <FormMessage />
                   </div>
