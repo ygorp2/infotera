@@ -50,12 +50,8 @@ export const FormSchema = z.object({
     .number({
       required_error: "É necessário pelo menos 1 adulto",
     })
-    .min(1)
-    .default(1),
-  childs: z.coerce
-    .number()
-    .positive({ message: "O número de crianças não pode ser negativo" })
-    .default(0),
+    .gte(1),
+  childs: z.coerce.number().gte(0),
 });
 
 const AppForm: FC = () => {
@@ -69,6 +65,7 @@ const AppForm: FC = () => {
   const [childs, setChilds] = useState(0);
   const { data: suggestions } = useGetSuggestions({
     searchTerm: debouncedDestiny,
+    limit: 5,
   });
 
   const { register } = form;
@@ -82,7 +79,7 @@ const AppForm: FC = () => {
         </pre>
       ),
     });
-    await router.push("search");
+    await router.push("/search");
   }
 
   return (
@@ -268,6 +265,7 @@ const AppForm: FC = () => {
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) =>
+                            date < new Date() ||
                             date < form.getValues("dateOfArrive")
                           }
                           initialFocus
@@ -337,6 +335,7 @@ const AppForm: FC = () => {
                           </Button>
                           <Input
                             type="number"
+                            defaultValue={0}
                             {...register("adults")}
                             className="mx-2 border-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                           />
@@ -353,6 +352,7 @@ const AppForm: FC = () => {
                             +
                           </Button>
                         </div>
+                        <FormMessage />
                         <Separator className="mx-2 mt-2" />
                         <Label htmlFor="childs">Crianças</Label>
                         <div className="flex">
@@ -373,6 +373,7 @@ const AppForm: FC = () => {
                           </Button>
                           <Input
                             type="number"
+                            defaultValue={0}
                             onInput={(e) => {
                               setChilds(Number(e.currentTarget.value));
                             }}
@@ -395,6 +396,7 @@ const AppForm: FC = () => {
                             +
                           </Button>
                         </div>
+                        <FormMessage />
                         <Separator className="mx-2 mt-2" />
                         <div className="mt-6 flex justify-end">
                           <Button
@@ -406,7 +408,6 @@ const AppForm: FC = () => {
                         </div>
                       </PopoverContent>
                     </Popover>
-                    <FormMessage />
                   </div>
                 </FormItem>
               )}

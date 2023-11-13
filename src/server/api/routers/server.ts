@@ -45,7 +45,9 @@ export const serverRouter = createTRPCRouter({
       };
     }),
   getSuggestions: publicProcedure
-    .input(z.object({ searchTerm: z.string() }))
+    .input(
+      z.object({ searchTerm: z.string(), limit: z.number().gte(1).optional() }),
+    )
     .output(SuggestionsSchema)
     .query(({ input }) => {
       const suggestion = suggestions.filter((suggestions) => {
@@ -54,7 +56,7 @@ export const serverRouter = createTRPCRouter({
           suggestions.region.toLowerCase().includes(input.searchTerm)
         );
       });
-      return suggestion;
+      return suggestion.slice(0, input.limit ?? suggestion.length);
     }),
   getHotels: publicProcedure.output(HotelSchema.array()).query(() => {
     return hotels;
