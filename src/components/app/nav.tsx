@@ -19,7 +19,7 @@ const Nav: FC = () => {
           <div>
             {router.pathname !== "/" && (
               <Button variant={"link"} asChild>
-                <Link href={"#"}>
+                <Link href={"/"}>
                   <HomeIcon size={20} color="#AAB9C7" />
                   <span className="ml-2 text-base text-gray-400">
                     Página inicial
