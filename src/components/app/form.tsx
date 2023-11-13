@@ -28,20 +28,13 @@ import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/router";
 import { useState, type FC } from "react";
-import Highlighter from "react-highlight-words";
 import { useDebounce } from "usehooks-ts";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
 import useGetSuggestions from "~/hooks/useGetSuggestion";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { Toaster } from "../ui/toaster";
+import { AutoComplete } from "./autocomplete";
 
 export const FormSchema = z.object({
   destiny: z.string({
@@ -66,16 +59,17 @@ const AppForm: FC = () => {
     resolver: zodResolver(FormSchema),
   });
   const router = useRouter();
-  const [destiny, setDestiny] = useState("");
-  const debouncedDestiny = useDebounce(destiny, 500);
 
   const [childs, setChilds] = useState(0);
+
+  const { register } = form;
+  const debouncedDestiny = useDebounce(form.getValues("destiny"), 500);
+
   const { data: suggestions } = useGetSuggestions({
-    searchTerm: debouncedDestiny,
+    searchTerm: debouncedDestiny ?? "dub",
     limit: 30,
   });
 
-  const { register } = form;
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     toast({
       title: "You submitted the following values:",
@@ -111,79 +105,37 @@ const AppForm: FC = () => {
                       />
                       <FormLabel className="text-base">Destino</FormLabel>
                     </div>
-                    <FormControl className="mt-1">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Input
-                            className="mx-2 w-screen max-w-xl border-none text-base font-semibold text-secondary"
-                            type="search"
-                            onInput={(e) => {
-                              setDestiny(e.currentTarget.value);
-                            }}
-                            {...field}
-                            placeholder="Cidade de destino"
-                          />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          loop={true}
-                          className="h-fit w-fit"
-                          align="start"
-                        >
-                          <ScrollArea className="h-80 max-w-[30em]">
-                            {destiny.length < 3 ? (
-                              <div>Digite no mínimo 3 caracteres</div>
-                            ) : suggestions?.length === 0 ? (
-                              <div>Nenhum resultado encontrado</div>
-                            ) : (
-                              suggestions && (
-                                <div>
-                                  {suggestions.map((suggestion) => {
-                                    return (
-                                      <div key={suggestion.id}>
-                                        <DropdownMenuItem
-                                          className="pb-4 hover:bg-background"
-                                          onClick={() =>
-                                            form.setValue(
-                                              "destiny",
-                                              suggestion.name,
-                                            )
-                                          }
-                                        >
-                                          <div className="flex items-center pt-4">
-                                            <MapPinIcon
-                                              size={20}
-                                              className="mx-2 h-6 w-6 opacity-50"
-                                              color="hsl(210, 80%, 51%)"
-                                            />
-                                            <div className="flex flex-col">
-                                              <Highlighter
-                                                className="text-lg"
-                                                searchWords={[field.value]}
-                                                textToHighlight={
-                                                  suggestion.name
-                                                }
-                                                highlightClassName="bg-[#B8B7EC]"
-                                              />
-                                              <Highlighter
-                                                searchWords={[field.value]}
-                                                highlightClassName="bg-[#B8B7EC]"
-                                                textToHighlight={
-                                                  suggestion.region
-                                                }
-                                              />
-                                            </div>
-                                          </div>
-                                        </DropdownMenuItem>
-                                        <Separator className="w-[30em]" />
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )
-                            )}
-                          </ScrollArea>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                    <FormControl className="mt-1 ">
+                      <AutoComplete
+                        emptyMessage="Nenhum resultado encontrado"
+                        options={
+                          suggestions
+                            ? suggestions.map((suggestion) => {
+                                return {
+                                  value: suggestion.name,
+                                  label: suggestion.name,
+                                  region: suggestion.region,
+                                };
+                              })
+                            : [
+                                {
+                                  label: "",
+                                  value: "",
+                                  region: "",
+                                },
+                              ]
+                        }
+                        onValueChange={(value) => {
+                          field.value = value.value;
+                          form.setValue("destiny", value.value);
+                        }}
+                        value={{
+                          value: field.value,
+                          label: field.value,
+                          region: "",
+                        }}
+                        placeholder="Cidade de destino"
+                      />
                     </FormControl>
                     <FormMessage />
                   </div>

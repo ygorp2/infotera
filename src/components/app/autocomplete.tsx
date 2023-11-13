@@ -6,12 +6,13 @@ import {
 } from "@/components/ui/command";
 import { Command as CommandPrimitive } from "cmdk";
 import { useCallback, useRef, useState, type KeyboardEvent } from "react";
+import Highlighter from "react-highlight-words";
 
-import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
+import { MapPinIcon } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 
-export type Option = Record<"value" | "label", string> & Record<string, string>;
+export type Option = Record<"value" | "label" | "region", string> &
+  Record<string, string>;
 
 type AutoCompleteProps = {
   options: Option[];
@@ -100,7 +101,7 @@ export const AutoComplete = ({
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
           disabled={disabled}
-          className="text-base"
+          className="mx-2 w-screen max-w-xl border-none text-base font-semibold text-secondary"
         />
       </div>
       <div className="relative mt-1">
@@ -117,7 +118,6 @@ export const AutoComplete = ({
               {options.length > 0 && !isLoading ? (
                 <CommandGroup>
                   {options.map((option) => {
-                    const isSelected = selected?.value === option.value;
                     return (
                       <CommandItem
                         key={option.value}
@@ -127,13 +127,28 @@ export const AutoComplete = ({
                           event.stopPropagation();
                         }}
                         onSelect={() => handleSelectOption(option)}
-                        className={cn(
-                          "flex w-full items-center gap-2",
-                          !isSelected ? "pl-8" : null,
-                        )}
+                        className="flex w-full items-center gap-2"
                       >
-                        {isSelected ? <Check className="w-4" /> : null}
-                        {option.label}
+                        <div className="flex items-center pt-4">
+                          <MapPinIcon
+                            size={20}
+                            className="mx-2 h-6 w-6 opacity-50"
+                            color="hsl(210, 80%, 51%)"
+                          />
+                          <div className="flex flex-col">
+                            <Highlighter
+                              className="text-lg"
+                              searchWords={[value?.value ?? ""]}
+                              textToHighlight={option.value}
+                              highlightClassName="bg-[#B8B7EC]"
+                            />
+                            <Highlighter
+                              searchWords={[value?.value ?? ""]}
+                              highlightClassName="bg-[#B8B7EC]"
+                              textToHighlight={option.region}
+                            />
+                          </div>
+                        </div>
                       </CommandItem>
                     );
                   })}
