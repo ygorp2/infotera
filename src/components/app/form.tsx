@@ -28,6 +28,7 @@ import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/router";
 import { useState, type FC } from "react";
+import Highlighter from "react-highlight-words";
 import { useDebounce } from "usehooks-ts";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -65,7 +66,7 @@ const AppForm: FC = () => {
   const [childs, setChilds] = useState(0);
   const { data: suggestions } = useGetSuggestions({
     searchTerm: debouncedDestiny,
-    limit: 5,
+    limit: 30,
   });
 
   const { register } = form;
@@ -134,7 +135,7 @@ const AppForm: FC = () => {
                                     return (
                                       <div
                                         key={suggestion.id}
-                                        className="mb-4"
+                                        className="pb-4 hover:bg-background"
                                         onClick={() =>
                                           form.setValue(
                                             "destiny",
@@ -142,17 +143,26 @@ const AppForm: FC = () => {
                                           )
                                         }
                                       >
-                                        <div className="mb-4 flex items-center">
+                                        <div className="flex items-center pt-4">
                                           <MapPinIcon
                                             size={20}
                                             className="mx-2 h-6 w-6 opacity-50"
                                             color="hsl(210, 80%, 51%)"
                                           />
                                           <div className="flex flex-col">
-                                            <span className="text-lg">
-                                              {suggestion.name}
-                                            </span>
-                                            <span>{suggestion.region}</span>
+                                            <Highlighter
+                                              className="text-lg"
+                                              searchWords={[field.value]}
+                                              textToHighlight={suggestion.name}
+                                              highlightClassName="bg-[#B8B7EC]"
+                                            />
+                                            <Highlighter
+                                              searchWords={[field.value]}
+                                              highlightClassName="bg-[#B8B7EC]"
+                                              textToHighlight={
+                                                suggestion.region
+                                              }
+                                            />
                                           </div>
                                         </div>
                                         <Separator className="w-[30em]" />

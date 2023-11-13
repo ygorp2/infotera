@@ -80,6 +80,9 @@ dependencies:
   react-dom:
     specifier: 18.2.0
     version: 18.2.0(react@18.2.0)
+  react-highlight-words:
+    specifier: ^0.20.0
+    version: 0.20.0(react@18.2.0)
   react-hook-form:
     specifier: ^7.48.2
     version: 7.48.2(react@18.2.0)
@@ -112,6 +115,9 @@ devDependencies:
   '@types/react-dom':
     specifier: ^18.2.14
     version: 18.2.15
+  '@types/react-highlight-words':
+    specifier: ^0.16.7
+    version: 0.16.7
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.3.0
     version: 6.10.0(@typescript-eslint/parser@6.10.0)(eslint@8.53.0)(typescript@5.2.2)
@@ -1250,6 +1256,12 @@ packages:
     resolution: {integrity: sha512-HWMdW+7r7MR5+PZqJF6YFNSCtjz1T0dsvo/f1BV6HkV+6erD/nA7wd9NM00KVG83zf2nJ7uATPO9ttdIPvi3gg==}
     dependencies:
       '@types/react': 18.2.37
+
+  /@types/react-highlight-words@0.16.7:
+    resolution: {integrity: sha512-+upXTIaRd3rGvh1aDQSs9z5X+sV3UM6Jrmjk03GN2GXl4v/+iOJKQj2LZHo6Vp2IoTvMdtxgME26feqo12xXLg==}
+    dependencies:
+      '@types/react': 18.2.37
+    dev: true
 
   /@types/react@18.2.37:
     resolution: {integrity: sha512-RGAYMi2bhRgEXT3f4B92WTohopH6bIXw05FuGlmJEnv/omEn190+QYEIYxIAuIBdKgboYYdVved2p1AxZVQnaw==}
@@ -2452,6 +2464,10 @@ packages:
     dependencies:
       function-bind: 1.1.2
 
+  /highlight-words-core@1.2.2:
+    resolution: {integrity: sha512-BXUKIkUuh6cmmxzi5OIbUJxrG8OAk2MqoL1DtO3Wo9D2faJg2ph5ntyuQeLqaHJmzER6H5tllCDA9ZnNe9BVGg==}
+    dev: false
+
   /ignore@5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
     engines: {node: '>= 4'}
@@ -2778,6 +2794,10 @@ packages:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /memoize-one@4.0.3:
+    resolution: {integrity: sha512-QmpUu4KqDmX0plH4u+tf0riMc1KHE1+lw95cMrLlXQAFOx/xnBtwhZ52XJxd9X2O6kwKBqX32kmhbhlobD0cuw==}
     dev: false
 
   /merge2@1.4.1:
@@ -3156,7 +3176,6 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
-    dev: true
 
   /punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -3186,6 +3205,17 @@ packages:
       scheduler: 0.23.0
     dev: false
 
+  /react-highlight-words@0.20.0(react@18.2.0):
+    resolution: {integrity: sha512-asCxy+jCehDVhusNmCBoxDf2mm1AJ//D+EzDx1m5K7EqsMBIHdZ5G4LdwbSEXqZq1Ros0G0UySWmAtntSph7XA==}
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
+    dependencies:
+      highlight-words-core: 1.2.2
+      memoize-one: 4.0.3
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
+
   /react-hook-form@7.48.2(react@18.2.0):
     resolution: {integrity: sha512-H0T2InFQb1hX7qKtDIZmvpU1Xfn/bdahWBN1fH19gSe4bBEqTfmlr7H3XWTaVtiK4/tpPaI1F3355GPMZYge+A==}
     engines: {node: '>=12.22.0'}
@@ -3197,7 +3227,6 @@ packages:
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
-    dev: true
 
   /react-remove-scroll-bar@2.3.4(@types/react@18.2.37)(react@18.2.0):
     resolution: {integrity: sha512-63C4YQBUt0m6ALadE9XV56hV8BgJWDmmTPY758iIJjfQKt2nYwoUrPk0LXRXcB/yIj82T1/Ixfdpdk68LwIB0A==}
